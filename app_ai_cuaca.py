@@ -19,10 +19,10 @@ else:
     bg_color = "#0e1117"
     text_color = "#fafafa"
 
-st.set_page_config(page_title="AI Cuaca Pro++", page_icon="🌤️", layout="centered")
+st.set_page_config(page_title="AI Cuaca Pro+++", page_icon="🌤️", layout="centered")
 
 # ---------------------------
-# 🌟 Custom CSS untuk Tema
+# 🌟 Custom CSS
 # ---------------------------
 st.markdown(
     f"""
@@ -45,13 +45,32 @@ st.markdown(
 # ---------------------------
 # 🧠 Judul Aplikasi
 # ---------------------------
-st.title("🌦️ AI Cuaca Pro++")
-st.caption("Dibuat oleh **Beni Siswanto** — dengan grafik tren suhu 7 hari 📊")
+st.title("🌦️ AI Cuaca Pro+++")
+st.caption("Dibuat oleh **Beni Siswanto** — sekarang dengan deteksi lokasi otomatis 📍")
 
 # ---------------------------
-# 🌍 Input Kota
+# 📍 Deteksi Lokasi Otomatis (GeoIP)
 # ---------------------------
-city = st.text_input("Masukkan nama kota:", "Jakarta")
+st.info("🌍 Mendeteksi lokasi Anda secara otomatis...")
+
+try:
+    geo_res = requests.get("https://ipapi.co/json/")
+    if geo_res.status_code == 200:
+        geo_data = geo_res.json()
+        city_auto = geo_data.get("city", "Jakarta")
+        country = geo_data.get("country_name", "")
+        st.success(f"📍 Lokasi terdeteksi: {city_auto}, {country}")
+    else:
+        city_auto = "Jakarta"
+        st.warning("⚠️ Tidak dapat mendeteksi lokasi. Menggunakan default: Jakarta")
+except:
+    city_auto = "Jakarta"
+    st.warning("⚠️ Gagal mendeteksi lokasi. Menggunakan default: Jakarta")
+
+# ---------------------------
+# 🌍 Input Kota (bisa ubah manual)
+# ---------------------------
+city = st.text_input("Masukkan nama kota (otomatis terisi):", city_auto)
 
 # ---------------------------
 # 🌐 Ambil Data Cuaca Sekarang
@@ -74,9 +93,7 @@ if res_now.status_code == 200:
     st.write(f"💧 **Kelembapan:** {kelembapan}%")
     st.write(f"💨 **Kecepatan Angin:** {kecepatan_angin} m/s")
 
-    # ---------------------------
     # 🌦️ Animasi Cuaca
-    # ---------------------------
     if "hujan" in deskripsi.lower():
         st.image("https://i.gifer.com/7scX.gif", caption="Hujan 🌧️", use_container_width=True)
     elif "awan" in deskripsi.lower():
@@ -95,10 +112,9 @@ if res_now.status_code == 200:
 
     if res_forecast.status_code == 200:
         data_forecast = res_forecast.json()
-        temps = []
-        dates = []
+        temps, dates = [], []
 
-        for item in data_forecast["list"][::8]:  # ambil tiap 24 jam (3 jam * 8)
+        for item in data_forecast["list"][::8]:
             temps.append(item["main"]["temp"])
             dates.append(item["dt_txt"].split(" ")[0])
 
@@ -113,10 +129,10 @@ if res_now.status_code == 200:
         )
         st.plotly_chart(fig, use_container_width=True)
     else:
-        st.warning("⚠️ Data prakiraan 7 hari tidak tersedia untuk kota ini.")
+        st.warning("⚠️ Data prakiraan 7 hari tidak tersedia.")
 
     # ---------------------------
-    # 🤖 Prediksi AI Suhu
+    # 🤖 Prediksi AI Berdasarkan Kelembapan
     # ---------------------------
     st.subheader("🤖 Prediksi AI Berdasarkan Kelembapan")
     data_latih = pd.DataFrame({
@@ -134,4 +150,4 @@ if res_now.status_code == 200:
     st.caption(f"⏰ Data diperbarui: {waktu}")
 
 else:
-    st.error("❌ Kota tidak ditemukan atau API key salah. Silakan cek kembali.")
+    st.error("❌ Kota tidak ditemukan atau API key salah.")
