@@ -6,19 +6,63 @@ from sklearn.linear_model import LinearRegression
 from datetime import datetime
 
 # ---------------------------
-# 🔷 Judul Aplikasi
+# 🌗 Tema Otomatis Berdasarkan Waktu
 # ---------------------------
-st.set_page_config(page_title="AI Cuaca Pro+", page_icon="🌦️", layout="centered")
-st.title("🌦️ AI Cuaca Pro+")
-st.markdown("Aplikasi AI Cuaca Pro+ dengan animasi dan prediksi suhu — by **Beni Siswanto** 🚀")
+current_hour = datetime.now().hour
+if 6 <= current_hour < 18:
+    theme = "light"
+    bg_color = "#f7f9fc"
+    text_color = "#1a1a1a"
+else:
+    theme = "dark"
+    bg_color = "#0e1117"
+    text_color = "#fafafa"
+
+st.set_page_config(page_title="AI Cuaca Pro+ 🌦️", page_icon="🌤️", layout="centered")
 
 # ---------------------------
-# 🔹 Input Kota
+# 🌟 Custom CSS untuk Tema
+# ---------------------------
+st.markdown(
+    f"""
+    <style>
+        body {{
+            background-color: {bg_color};
+            color: {text_color};
+            font-family: 'Segoe UI', sans-serif;
+        }}
+        .stApp {{
+            background-color: {bg_color};
+            color: {text_color};
+        }}
+        .stTextInput > div > div > input {{
+            background-color: #1c1f26 if theme == "dark" else #ffffff;
+            color: {text_color};
+        }}
+        h1, h2, h3, h4, h5, h6 {{
+            color: {text_color};
+        }}
+        footer {{
+            visibility: hidden;
+        }}
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+# ---------------------------
+# 🧠 Judul Aplikasi
+# ---------------------------
+st.title("🌦️ AI Cuaca Pro+")
+st.caption("Dibuat oleh **Beni Siswanto** — dengan mode gelap otomatis ✨")
+
+# ---------------------------
+# 🌍 Input Kota
 # ---------------------------
 city = st.text_input("Masukkan nama kota:", "Jakarta")
 
 # ---------------------------
-# 🔹 Ambil Data Cuaca dari API
+# 🌐 Ambil Data Cuaca
 # ---------------------------
 api_key = "e342c36c5677da82798e5c28c61c7c54"
 url = f"https://api.openweathermap.org/data/2.5/weather?q={city}&appid={api_key}&units=metric&lang=id"
@@ -32,9 +76,6 @@ if response.status_code == 200:
     kelembapan = data["main"]["humidity"]
     kecepatan_angin = data["wind"]["speed"]
 
-    # ---------------------------
-    # 🔹 Tampilkan Data Cuaca
-    # ---------------------------
     st.subheader(f"🌍 Cuaca di {city.title()}")
     st.write(f"**Deskripsi:** {deskripsi.capitalize()}")
     st.write(f"🌡️ **Suhu:** {suhu}°C")
@@ -42,7 +83,7 @@ if response.status_code == 200:
     st.write(f"💨 **Kecepatan Angin:** {kecepatan_angin} m/s")
 
     # ---------------------------
-    # 🔹 Animasi Cuaca
+    # 🌦️ Animasi Cuaca
     # ---------------------------
     if "hujan" in deskripsi.lower():
         st.image("https://i.gifer.com/7scX.gif", caption="Hujan 🌧️", use_container_width=True)
@@ -54,9 +95,9 @@ if response.status_code == 200:
         st.image("https://i.gifer.com/5eKX.gif", caption="Cuaca tidak menentu 🌈", use_container_width=True)
 
     # ---------------------------
-    # 🔹 AI Prediksi Suhu
+    # 🤖 Prediksi AI
     # ---------------------------
-    st.subheader("🤖 Prediksi Suhu (AI)")
+    st.subheader("🤖 Prediksi Suhu oleh AI")
     data_latih = pd.DataFrame({
         "kelembapan": [30, 40, 50, 60, 70, 80, 90],
         "suhu": [33, 32, 31, 29, 27, 26, 25]
@@ -71,9 +112,6 @@ if response.status_code == 200:
     suhu_prediksi = model.predict(np.array([[kelembapan]]))[0]
     st.write(f"🤖 Berdasarkan AI, suhu diperkirakan: **{suhu_prediksi:.1f}°C**")
 
-    # ---------------------------
-    # 🔹 Waktu Update
-    # ---------------------------
     waktu = datetime.now().strftime("%d %B %Y, %H:%M:%S")
     st.caption(f"⏰ Data diperbarui: {waktu}")
 
