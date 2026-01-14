@@ -27,6 +27,5 @@
 ## 🌍 Cara Menjalankan di Laptop
 1. Masuk ke link ini :
    https://ai-cuaca-pro-beni.streamlit.app
-   ```bash
    git clone https://github.com/benn72-tech/ai-cuaca-pro.git
    cd ai-cuaca-pr
