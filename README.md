@@ -24,6 +24,6 @@
 
 ---
 
-## 🌍 Cara Menjalankan di Laptop
-1. Masuk ke link ini :
-   https://ai-cuaca-pro-beni.streamlit.app
+🌐 Demo Online
+
+👉 Akses Aplikasi Online:https://ai-cuaca-pro-beni.streamlit.app
